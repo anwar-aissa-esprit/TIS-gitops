@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: tis-app
+  labels:
+    app: tis-backend
+    managed-by: argocd
+spec:
+  type: ClusterIP
+  selector:
+    app: tis-backend
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP

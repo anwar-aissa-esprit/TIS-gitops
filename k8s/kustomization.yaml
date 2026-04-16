@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tis-app
+
+resources:
+  - namespace.yaml
+  - secret-nexus.yaml
+  - secret-sqlserver.yaml
+  - secret-backend.yaml
+  - sqlserver-pvc.yaml
+  - sqlserver-deployment.yaml
+  - sqlserver-service.yaml
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/name: tis-app
+  app.kubernetes.io/instance: production
+  managed-by: argocd
+
+commonAnnotations:
+  description: "TIS Application"
+  owner: "devops-team"

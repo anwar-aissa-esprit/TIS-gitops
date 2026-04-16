@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tis-app
+  labels:
+    name: tis-app
+    managed-by: argocd
