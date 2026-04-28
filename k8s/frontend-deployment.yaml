@@ -26,7 +26,7 @@ spec:
       
       containers:
       - name: tis-frontend
-        image: 192.168.56.10:8082/tis-frontend:latest
+        image: 192.168.150.138:8082/tis-frontend:latest
         imagePullPolicy: Always
         
         ports:
