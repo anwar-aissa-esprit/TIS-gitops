@@ -11,18 +11,11 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-
 spec:
   ingressClassName: nginx
-  
   rules:
-  - host: tis.local
-    http:
+  - http:
       paths:
-      # Frontend - Path /
       - path: /
         pathType: Prefix
         backend:
@@ -30,8 +23,6 @@ spec:
             name: frontend-service
             port:
               number: 80
-      
-      # Backend API - Path /api
       - path: /api
         pathType: Prefix
         backend:
