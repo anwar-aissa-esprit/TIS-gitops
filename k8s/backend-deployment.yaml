@@ -29,7 +29,7 @@ spec:
       
       containers:
       - name: tis-backend
-        image: 192.168.150.138:8082/tis-backend:6
+        image: 192.168.150.138:8082/tis-backend:7
         imagePullPolicy: Always
         
         ports:
