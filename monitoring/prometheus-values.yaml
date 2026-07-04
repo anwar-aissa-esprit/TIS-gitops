@@ -1,0 +1,95 @@
+# Grafana désactivé (on dessine nos propres courbes)
+grafana:
+  enabled: false
+
+# AlertManager ACTIVÉ
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
+      receiver: devopsplatform-webhook
+    receivers:
+      - name: devopsplatform-webhook
+        webhook_configs:
+          - url: 'http://192.168.150.138:5000/api/alerts/webhook'
+            send_resolved: true
+
+# Règles d'alerte importantes
+additionalPrometheusRulesMap:
+  pod-alerts:
+    groups:
+      - name: pod.rules
+        rules:
+          # Pod down depuis 2 minutes
+          - alert: PodNotReady
+            expr: kube_pod_status_ready{condition="true"} == 0
+            for: 2m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pod {{ $labels.pod }} non prêt"
+              description: "Namespace {{ $labels.namespace }}"
+          # Pod en CrashLoopBackOff
+          - alert: PodCrashLooping
+            expr: rate(kube_pod_container_status_restarts_total[5m]) > 0
+            for: 2m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pod {{ $labels.pod }} crashe en boucle"
+              description: "Namespace {{ $labels.namespace }}"
+          # RAM > 80% de la limite
+          - alert: PodMemoryHigh
+            expr: |
+              container_memory_working_set_bytes{container!=""}
+              /
+              container_spec_memory_limit_bytes{container!=""}
+              > 0.8
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "RAM élevée pour {{ $labels.pod }}"
+              description: "Usage > 80% de la limite"
+
+# Prometheus core : config légère pour le lab
+prometheus:
+  prometheusSpec:
+    retention: 6h
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Exporters essentiels
+nodeExporter:
+  enabled: true
+kubeStateMetrics:
+  enabled: true
+
+# Composants control-plane désactivés (lab)
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
